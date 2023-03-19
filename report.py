@@ -1,4 +1,4 @@
-"""The creating automated excel report from sales data"""
+"""Automating the Excel Report from sales data"""
 
 import pandas as pd
 from openpyxl import load_workbook
@@ -6,13 +6,14 @@ from openpyxl.chart import BarChart, Reference
 from openpyxl.styles import Alignment, Font 
 
 
-output_path = 'C:\Python Scripts\Projects_new\Excel_project\sales_report3.xlsx'
+output_path = 'Excel_project\sales_report.xlsx'
 
 
 def excel_report(file):
     '''Function to create automated excel report.
        The file name should have the following structure: your_file.xlsx'''
     
+    # read excel file
     df = pd.read_excel(file, sheet_name='Sheet1')
 
     # make pivot table Income by city
@@ -22,12 +23,12 @@ def excel_report(file):
                                 aggfunc='sum').round(0)
 
     # send the report table to excel file
-    income_city.to_excel('sales_report3.xlsx',
+    income_city.to_excel('sales_report.xlsx',
                       sheet_name='Sales_city',
                       startrow=4)
 
     # loading workbook and selecting sheet
-    wb = load_workbook('sales_report3.xlsx')
+    wb = load_workbook('sales_report.xlsx')
     sheet = wb.active
     sheet = wb['Sales_city']
 
@@ -70,7 +71,7 @@ def excel_report(file):
     chart.x_axis.title = "City"
     chart.y_axis.title = "Total sales"
 
-    # formatting the report
+    # formatting the final report
     sheet['D1'] = 'Sales Report'
     sheet['D2'] = 'Sales by cities and products'
     sheet['D1'].font = Font('Arial', bold=True, size=24)
