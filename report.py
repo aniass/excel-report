@@ -5,13 +5,13 @@ from openpyxl import load_workbook
 from openpyxl.chart import BarChart, Reference
 from openpyxl.styles import Alignment, Font 
 
-
+# your output path
 output_path = 'Excel_project\sales_report.xlsx'
 
 
 def excel_report(file):
     '''Function to create automated excel report.
-       The file name should have the following structure: your_file.xlsx'''
+    The file name should have the following structure: your_file.xlsx'''
     
     # read excel file
     df = pd.read_excel(file, sheet_name='Sheet1')
