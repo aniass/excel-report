@@ -5,8 +5,8 @@ from openpyxl import load_workbook
 from openpyxl.chart import BarChart, Reference
 from openpyxl.styles import Alignment, Font 
 
-# your output path
-output_path = 'Excel_project\sales_report.xlsx'
+# # Define the output path for the Excel report
+OUTPUT_PATH = 'Excel_project\sales_report.xlsx'
 
 
 def excel_report(file):
@@ -79,7 +79,7 @@ def excel_report(file):
     sheet['D2'].font = Font('Arial', bold=True, size=10, italic = True)
     sheet['D2'].alignment = Alignment(horizontal="center")
 
-    wb.save(output_path)
+    wb.save(OUTPUT_PATH)
     return wb
 
 
