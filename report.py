@@ -9,42 +9,35 @@ from openpyxl.styles import Alignment, Font
 OUTPUT_PATH = 'Excel_project\sales_report.xlsx'
 
 
-def excel_report(file):
-    '''Function to create automated excel report.
-    The file name should have the following structure: your_file.xlsx'''
-    
-    # read excel file
+def read_data(file):
     df = pd.read_excel(file, sheet_name='Sheet1')
-
-    # make pivot table Income by city
+    return df
+ 
+    
+def create_pivot_table(df):
     income_city = df.pivot_table(index='City',
                                 values='Total',
                                 columns='Product line',
                                 aggfunc='sum').round(0)
-
-    # send the report table to excel file
-    income_city.to_excel('sales_report.xlsx',
-                      sheet_name='Sales_city',
-                      startrow=4)
-
-    # loading workbook and selecting sheet
-    wb = load_workbook('sales_report.xlsx')
+    return income_city
+    
+    
+def write_to_excel(pivot_table):
+    pivot_table.to_excel(OUTPUT_PATH, sheet_name='Sales_city', startrow=4)
+    
+    
+def format_workbook():
+    wb = load_workbook(OUTPUT_PATH)
     sheet = wb.active
     sheet = wb['Sales_city']
+    
+     # Adjust column dimensions
+    dimensions = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+    for col in dimensions:
+        sheet.column_dimensions[col].width = 12 if col == 'A' else 20
 
-    # change column dimension
-    sheet.column_dimensions['A'].width = 12
-    sheet.column_dimensions['B'].width = 20
-    sheet.column_dimensions['C'].width = 20
-    sheet.column_dimensions['D'].width = 20
-    sheet.column_dimensions['E'].width = 20
-    sheet.column_dimensions['F'].width = 20
-    sheet.column_dimensions['G'].width = 20
-
-    # Bar chart adding
+    # Add bar chart
     chart = BarChart()
-   
-    # cell references (original spreadsheet)
     min_column = wb.active.min_column
     max_column = wb.active.max_column
     min_row = wb.active.min_row
@@ -64,24 +57,30 @@ def excel_report(file):
 
     chart.add_data(data, titles_from_data=True)
     chart.set_categories(categories)
-
     sheet.add_chart(chart, "B11") 
     chart.title = 'Sales by city'
     chart.style = 42                
     chart.x_axis.title = "City"
     chart.y_axis.title = "Total sales"
 
-    # formatting the final report
+    # Format report title and subtitle
     sheet['D1'] = 'Sales Report'
     sheet['D2'] = 'Sales by cities and products'
-    sheet['D1'].font = Font('Arial', bold=True, size=24)
-    sheet['D1'].alignment = Alignment(horizontal="center")
-    sheet['D2'].font = Font('Arial', bold=True, size=10, italic = True)
-    sheet['D2'].alignment = Alignment(horizontal="center")
+    for cell in ['D1', 'D2']:
+        sheet[cell].font = Font('Arial', bold=True, size=24 if cell == 'D1' else 10, italic=True)
+        sheet[cell].alignment = Alignment(horizontal="center")
 
     wb.save(OUTPUT_PATH)
     return wb
 
 
+def generate_excel_report(file):
+    df = read_data(file)
+    pivot_table = create_pivot_table(df)
+    write_to_excel(pivot_table)
+    workbook = format_workbook()
+    return workbook
+
+
 if __name__ == '__main__':
-    excel_report('supermarket_sales.xlsx')
+    generate_excel_report('supermarket_sales.xlsx')
