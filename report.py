@@ -5,16 +5,18 @@ from openpyxl import load_workbook
 from openpyxl.chart import BarChart, Reference
 from openpyxl.styles import Alignment, Font 
 
-# # Define the output path for the Excel report
+# Define the output path for the Excel report
 OUTPUT_PATH = 'Excel_project\sales_report.xlsx'
 
 
 def read_data(file):
+    '''Read data from Excel file'''
     df = pd.read_excel(file, sheet_name='Sheet1')
     return df
  
     
 def create_pivot_table(df):
+    '''Create pivot table: Income by city'''
     income_city = df.pivot_table(index='City',
                                 values='Total',
                                 columns='Product line',
@@ -23,15 +25,17 @@ def create_pivot_table(df):
     
     
 def write_to_excel(pivot_table):
+    '''Write the pivot table to an Excel file'''
     pivot_table.to_excel(OUTPUT_PATH, sheet_name='Sales_city', startrow=4)
     
     
 def format_workbook():
+    '''Format the Excel workbook'''
     wb = load_workbook(OUTPUT_PATH)
     sheet = wb.active
     sheet = wb['Sales_city']
     
-     # Adjust column dimensions
+    # Adjust column dimensions
     dimensions = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
     for col in dimensions:
         sheet.column_dimensions[col].width = 12 if col == 'A' else 20
@@ -48,13 +52,11 @@ def format_workbook():
                  max_col=max_column,
                  min_row=min_row,
                  max_row=max_row) 
-
     categories = Reference(sheet,
                        min_col=min_column,
                        max_col=min_column,
                        min_row=min_row+1,
                        max_row=max_row) 
-
     chart.add_data(data, titles_from_data=True)
     chart.set_categories(categories)
     sheet.add_chart(chart, "B11") 
@@ -75,6 +77,7 @@ def format_workbook():
 
 
 def generate_excel_report(file):
+    '''Generate an automated Excel report'''
     df = read_data(file)
     pivot_table = create_pivot_table(df)
     write_to_excel(pivot_table)
